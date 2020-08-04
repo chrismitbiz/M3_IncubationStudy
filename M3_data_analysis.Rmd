@@ -216,7 +216,6 @@ dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "Poul
 
 ```
 
-
 ```{r boxplots1, fig.width=10, fig.asp=0.8, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, fig.cap="Boxplots of dieldrin concentrations and dieldrin concentrations relative to start of experiment (T0), including histograms."}
 
 p1.1 <- data_noref %>% filter(Week != "T0") %>% filter(SampleNo != 4 ) %>% ggboxplot(data = ., x = "Week", y = "T0_Diff", ylab = "Residue remaining since T0 (%)",  add = "jitter", fill = "Week", palette = "simpsons", xlab = FALSE) +  rotate_x_text(angle = 45) + stat_compare_means( method = "kruskal")   + scale_fill_manual(values=c("cornflowerblue", "azure4", "burlywood3" )) + ggpubr::stat_compare_means(label = "..p.signif..", method = "t.test",  ref.group = "T16", hide.ns = TRUE)
@@ -299,6 +298,20 @@ ggarrange(p1, p2, common.legend = TRUE)
 
 ```
 
+Respiration is calculated as the sum of all currently measured traps (see next figure)
+
+```{r lineplotCO2, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+#p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
+
+p2 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "µgCO2.Cgsoil", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
+
+pdf(NULL)
+g1 <- ggpubr::ggarrange(p2, nrow = 1, ncol=1, common.legend = TRUE)
+x = dev.off()
+g1
+
+```
+  
 There was a negative relationship of respiration and dieldrin loss. Dieldrin dissipated less in samples were microorganisms respired more carbon. This may be another hint that efficiency of carbon use may be linked to dieldrin degradation.
 
 <br/>
@@ -635,18 +648,4 @@ this is currently not showing
 <br/> 
 ```{r, include=FALSE, eval=FALSE,message=FALSE, echo = FALSE, warning = FALSE}
 summary(M1)
-```
-
-
-# Respiration
-```{r lineplotCO2, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Dieldrin concentrations (log) across time. Error bars show the standard error of the mean of four replicates."}
-#p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
-
-p2 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "µgCO2.Cgsoil", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
-
-pdf(NULL)
-g1 <- ggpubr::ggarrange(p2, nrow = 1, ncol=1, common.legend = TRUE)
-x = dev.off()
-g1
-
 ```
