@@ -251,7 +251,7 @@ The cause of this drop is likely related to the 'ploughing' of soils in the jars
 The distribution of concentrations appears to be normal for T0, T39 and T52 but not for T16.
 
 <br/>
-```{r corplotfi2, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE }
+```{r corplotfi2, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=FALSE }
 #Calculate the sum of CO2 produced per g of soil
 df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
@@ -270,7 +270,7 @@ ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)))
 ```
 
 
-```{r scatterplotfi3, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, fig.width=9 }
+```{r scatterplotfi2, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, fig.width=9 }
 #Calculate the sum of CO2 produced per g of soil
 df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
@@ -300,7 +300,7 @@ ggarrange(p1, p2, common.legend = TRUE)
 
 Respiration is calculated as the sum of all currently measured traps (see next figure)
 
-```{r lineplotCO2, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotCO2fig3, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
 p2 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "µgCO2.Cgsoil", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
@@ -316,7 +316,8 @@ There was a negative relationship of respiration and dieldrin loss. Dieldrin dis
 
 <br/>
 
-```{r boxpl2, echo=FALSE, fig.width=10, fig.asp=1.25,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Boxplots of dieldrin concentrations by treatment, week/treatment (a) and treatment/week (b). Letters above boxplots indicate significantly different means at an 0.05 level (Fisher's least significant difference, holms corrected)."}
+```{r boxplfig4, echo=FALSE, fig.width=10, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Boxplots of dieldrin concentrations by treatment, week/treatment (a) and treatment/week (b). Letters above boxplots indicate significantly different means at an 0.05 level (Fisher's least significant difference, holms corrected)."}
+
 # Boxplot dieldrin cc by treatment with sig. labels
 df1 <- data_noref %>% filter(SampleName != "t0_4.run" )
 df1$Treatment <- factor(df1$Treatment)
@@ -326,13 +327,13 @@ groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
 
-p1 <- data_noref %>% filter(SampleName != "t0_4.run" ) %>% ggboxplot(data = ., x = "Treatment", y = "Dieldrin",  ylab = "Dieldrin (µg/g) across all timepoints", add = "jitter", fill = "Treatment", palette = "simpsons", xlab = FALSE) + rotate_x_text(angle = 45) + stat_compare_means(label.y = 1.25, method = "kruskal")   + annotate("text", x = groups1$Treatment, y=c(1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3), label = label)
+#p1 <- data_noref %>% filter(SampleName != "t0_4.run" ) %>% ggboxplot(data = ., x = "Treatment", y = "Dieldrin",  ylab = "Dieldrin (µg/g) across all timepoints", add = "jitter", fill = "Treatment", palette = "simpsons", xlab = FALSE) + rotate_x_text(angle = 45) + stat_compare_means(label.y = 1.25, method = "kruskal")   + annotate("text", x = groups1$Treatment, y=c(1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3), label = label)
 
 p2 <- ggboxplot( data_fltrd, x = "Treatment", y = "Dieldrin_trans",  ylab = "Dieldrin (log)", fill = "Week", palette = "simpsons") + rotate_x_text(angle = 45)
 
 p3 <- ggboxplot( data_fltrd, x = "Week", y = "Dieldrin_trans", ylab = "Dieldrin (log)", fill = "Treatment", palette = "simpsons")+ rotate_x_text(angle = 45)
 
-ggarrange(ggarrange(p1, p3,ncol = 1, common.legend = TRUE), p2, ncol = 1, heights = c(0.66, 0.33), labels = "auto")
+ggarrange(ggarrange(p3,ncol = 1, common.legend = TRUE), p2, ncol = 1, heights = c(0.5, 0.5), labels = "auto")
 
 
 #ggboxplot( Sample_Peaks1, x = "TWeeks", y = "GCArea_Dieldrin",  ylab = "GCArea_Dieldrin", fill = "Treatment", palette = "simpsons") + rotate_x_text(angle = 45)
@@ -345,7 +346,7 @@ The treatment-comparison of dieldrin concentrations (T0, T16, T39 and T52 combin
 It was also apparent the the biochar and heat treatment contained soil with lowest dieldrin concentrations from the start of the experiment. This meant that the effect of these treatments was immediate. For biochar this could be explained by lower extractability of dieldrin due to immediate sorption to biochar. 
 
 <br/>  
-```{r T0T16avg, echo=FALSE, fig.width=8, fig.asp=0.6,  message=FALSE, echo = FALSE, cache=TRUE, warning = FALSE, include=TRUE, fig.cap="Boxplots of dieldrin concentrations by treatment/week. Average values for T0 and T16 are shown."}
+```{r T0T16avg, echo=FALSE, fig.width=8, fig.asp=0.6,  message=FALSE, echo = FALSE, cache=TRUE, warning = FALSE, include=FALSE, fig.cap="Boxplots of dieldrin concentrations by treatment/week. Average values for T0 and T16 are shown."}
 
 df <- data.frame(T0T16_avg = ((T0$Dieldrin + T16$Dieldrin) / 2), data %>% filter(Week == "T39") %>% select(Dieldrin), data %>% filter(Week == "T52") %>% select(Dieldrin), data %>% filter(Week == "T0") %>% select(Treatment), data %>% filter(Week == "T0") %>% select(SampleNo)  ) %>% rename(T39 = Dieldrin) %>%  rename(T52 = Dieldrin.1) 
 
@@ -358,7 +359,7 @@ ggboxplot( data = df %>% pivot_longer(cols = c("T0T16_avg", "T39", "T52")), x = 
 ```
 
 <br/>
-```{r lineplot, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Dieldrin concentrations (log) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotfig5, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Dieldrin concentrations (log) across time. Error bars show the standard error of the mean of four replicates."}
 
 l0 <- data_noref %>% filter(SampleName != "t0_4.run" ) %>% ggpubr::ggline(data = ., x = "Week_int", y = "Dieldrin_trans", ylab = "Dieldrin (log)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
@@ -374,7 +375,7 @@ g1
 ```
 
 <br/>  
-```{r line2, echo=FALSE, fig.width=8, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Residues remaining since T0 in percent for two sets of treatments including the control (a,b). Error bars show the standard error of the mean of four replicates. Dieldrin concentrations (µg/g) over time."}
+```{r line, include = FALSE, echo=FALSE, fig.width=8, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Residues remaining since T0 in percent for two sets of treatments including the control (a,b). Error bars show the standard error of the mean of four replicates. Dieldrin concentrations (µg/g) over time."}
 
 l1 <- data_noref  %>% filter(SampleNo != 4 ) %>% filter(Week != "T52" ) %>% filter(Treatment %in% c("Control", "Heat", "Lime", "Biochar", "PoultryLitter","H2O2")) %>% ggpubr::ggline(data =., x = "Week_int", y = "T0_Diff", ylab = "Residue remaining since T0 (%)", add = c("mean_se"), color = "Treatment", palette = "simpsons",xlab = FALSE)  + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal") + ggpubr::rotate_x_text(angle = 45) 
 
@@ -392,7 +393,7 @@ ggpubr::ggarrange(ncol =1, nrow=2, ggarrange(l1, s1, ncol = 2, nrow =1, common.l
 ```
 <br/>
 
-```{r line23952, echo=FALSE, fig.width=8, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Residues remaining since T39 (9 month) in percent for two sets of treatments including the control (a,b). Error bars show the standard error of the mean of four replicates. Dieldrin concentrations (µg/g) over time."}
+```{r line23952, include = FALSE, echo=FALSE, fig.width=8, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Residues remaining since T39 (9 month) in percent for two sets of treatments including the control (a,b). Error bars show the standard error of the mean of four replicates. Dieldrin concentrations (µg/g) over time."}
 l1 <- data_noref  %>% filter(SampleNo != 4 ) %>% filter(Week %in% c("T39", "T52" )) %>% filter(Treatment %in% c("Control", "Heat", "Lime", "Biochar", "PoultryLitter","H2O2")) %>% ggpubr::ggline(data =., x = "Week_int", y = "T39_Diff", ylab = c("Residue remaining since T39 (%)"), add = c("mean_se"), color = "Treatment", palette = "simpsons",xlab = FALSE)  + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal") + ggpubr::rotate_x_text(angle = 45) 
 
 s1 <- data_noref  %>% filter(SampleName != "t0_4.run" ) %>% filter(Week %in% c("T39", "T52" )) %>% filter(Treatment %in% c("Control", "Heat", "Lime", "Biochar", "PoultryLitter","H2O2")) %>% ggpubr::ggscatter(data=., x = "Week_int", y = "Dieldrin", ylab = "Dieldrin (µg/g)", add = c("reg.line"), color = "Treatment", palette = "simpsons",xlab = FALSE ) + ggpubr::rotate_x_text(angle = 45)
@@ -409,7 +410,7 @@ ggpubr::ggarrange(ncol =1, nrow=2, ggarrange(l1, s1, ncol = 2, nrow =1, common.l
 <br/>
 
 # Dieldrin loss
-```{r dloss, echo=FALSE, fig.width=10, fig.asp=2, include=TRUE, fig.cap="Residues loss in percent. Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (dunn test, holm correct *p* value)."}
+```{r dlossfig6, echo=FALSE, fig.width=10, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. At T39 the soil was ploughed inside the jars. Two timelines were therefore assessed separately (T0−T39 and T39−T52). Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
 library(ggpubr)
 library(agricolae)
 
@@ -421,7 +422,7 @@ levels  <- base::levels(df$Treatment) %>% as.data.frame()
 groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
-p1 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T39" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%)") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 15) + geom_hline(yintercept = 0, linetype = 2)  + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)
+p1 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T39" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%)") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 15) + geom_hline(yintercept = 0, linetype = 2)  + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)+ ggtitle("Dieldrin loss from T0 to T39")
 #+ ggpubr::stat_compare_means(label = "..p.signif..", method = "t.test",  ref.group = "Control", hide.ns = TRUE)
 
 #Loss plot for week 52
@@ -433,7 +434,7 @@ groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
 
-p2 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%)") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 23) + geom_hline(yintercept = 0, linetype = 2)  + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)
+#p2 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%)") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 23) + geom_hline(yintercept = 0, linetype = 2)  + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label) + ggtitle("Dieldrin loss from T0 to T52")
 #+ ggpubr::stat_compare_means(label = "..p.signif..", method = "t.test",  ref.group = "Control", hide.ns = TRUE)
 
 ## loss plot from week 52 since week 39 
@@ -444,7 +445,7 @@ levels  <- levels(df$Treatment) %>% as.data.frame()%>% filter(. != "Reference")
 groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
-p3 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss39",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T39 - T52") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 23) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)
+p3 <- data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss39",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T39 - T52") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 23) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label) + ggtitle("Dieldrin loss from T39 to T52")
 
 
 ## loss plot from week 39 using average values of T0 and T16 with dunn test labels
@@ -460,7 +461,7 @@ groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
 
-p4 <- df1 %>% dplyr::mutate(loss = (T0T16_avg - T39) / T0T16_avg *100 ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T0T16_avg - T39") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 10) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)
+#p4 <- df1 %>% dplyr::mutate(loss = (T0T16_avg - T39) / T0T16_avg *100 ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T0T16_avg - T39") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 10) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)
 
 #pwc <- df %>% mutate(loss = (T0T16_avg - T52) / T0T16_avg *100 ) %>% 
 #  dunn_test(loss ~ Treatment, p.adjust.method = "holm") 
@@ -476,10 +477,10 @@ levels  <- levels(df$Treatment) %>% as.data.frame()%>% filter(. != "Reference")
 groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
 groups1 <- groups1[match(levels$., groups1$Treatment),]
 label <- as.vector(groups1$groups)
-p5 <- df1 %>% mutate(loss = (T0T16_avg - T52) / T0T16_avg *100 ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T0T16_avg - T52") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 22) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)+ ggpubr::stat_compare_means(label = "..p.signif..", method = "t.test",  ref.group = "Control", hide.ns = TRUE)
+#p5 <- df1 %>% mutate(loss = (T0T16_avg - T52) / T0T16_avg *100 ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T0T16_avg - T52") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 22) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label)+ ggpubr::stat_compare_means(label = "..p.signif..", method = "t.test",  ref.group = "Control", hide.ns = TRUE)
 
 
-ggarrange(p1, p2, p3, ncol = 1)
+ggarrange(p1,p3, ncol = 1)
 
 
 
@@ -503,40 +504,41 @@ car::Anova(mod2, type = 3)
 
 ```
 
-# Some awesome summary diagnostics
+# Summary 
 https://www.datanovia.com/en/lessons/repeated-measures-anova-in-r/
-```{r rmanova, echo=TRUE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=TRUE}
+```{r rmanova, echo=FALSE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=TRUE}
 # Normality
 library(rstatix)
-data %>% filter(SampleName != "t0_4.run" ) %>% 
-  group_by(Week) %>%
-   rstatix::shapiro_test(Dieldrin)
+#data %>% filter(SampleName != "t0_4.run" ) %>% 
+#  group_by(Week) %>%
+#   rstatix::shapiro_test(Dieldrin)
 
 # outliers
-data  %>%
-  group_by(Week) %>%
-  rstatix::identify_outliers(Dieldrin) %>% select(Week,Treatment, Dieldrin, is.outlier, is.extreme)
+#data  %>%
+#  group_by(Week) %>%
+#  rstatix::identify_outliers(Dieldrin) %>% select(Week,Treatment, Dieldrin, is.outlier, is.extreme)
 
 # Summary mean and sd
 data %>% filter(SampleName != "t0_4.run" ) %>%
   group_by(Week) %>%
   get_summary_stats(Dieldrin, type = "mean_sd")
+#Transform dieldrin values to improve distribution in order to meet normality assumption
+#remove 1 extreme outlier sample (Control, 1.33µg/g dieldrin)
 ```
-Transform dieldrin values to improve distribution in order to meet normality assumption
-remove 1 extreme outlier sample (Control, 1.33µg/g dieldrin)
 
-```{r rmanova2, echo=FALSE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=TRUE}
+```{r rmanova2, echo=FALSE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=FALSE}
 data_fltrd %>%
   group_by(Week) %>%
    rstatix::shapiro_test(Dieldrin_trans) 
 
 data_fltrd %>%
   group_by(Week) %>%
-   rstatix::shapiro_test(Dieldrin) 
-```
-Go with log transform for now
+   rstatix::shapiro_test(Dieldrin)
 
-```{r rmanova3, echo=TRUE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=TRUE}
+#Go with log transform for now
+```
+
+```{r rmanova3, echo=TRUE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=FALSE}
 library(rstatix)
 
 res.aov <- anova_test(data = data_fltrd, dv = Dieldrin_trans, between = c(Week, Treatment))
@@ -561,7 +563,6 @@ bxp <- bxp +
 bxp
 ```
 
-## Some more summary stats, this time including Treatment
 ```{r rmanova4, echo=TRUE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=FALSE}
 data_fltrd %>%
   group_by(Treatment, Week) %>%
@@ -575,9 +576,11 @@ ggqqplot(data_fltrd, "Dieldrin_trans", ggtheme = theme_bw()) +
   facet_grid(Week ~ Treatment, labeller = "label_both")
 ```
 
+
+```{r rmanova5, echo=TRUE, message=FALSE, eval= FALSE, cache=TRUE, warning = FALSE, include = FALSE}
 ## A repeated measures ANOVA (this is not valid as I used replicates as individuals)
-There were no individual soils that were treated differently but wanted to see what happens if we assume that each replicate was the same individual
-```{r rmanova5, echo=TRUE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE}
+#There were no individual soils that were treated differently but wanted to see what happens if we assume that each replicate was the same individual
+
 data_sel <- data %>% dplyr::select(Replicate, Treatment, Week, Dieldrin) %>% as_tibble()
 anova_test(  data = data_sel, dv = Dieldrin, wid = Replicate,
   within = c(Treatment, Week) )
@@ -585,8 +588,7 @@ anova_test(  data = data_sel, dv = Dieldrin, wid = Replicate,
 ```
 
 
-# LME models
-```{r lme, include=FALSE, eval=FALSE, fig.width=10, fig.asp= 1, message=FALSE, echo = TRUE, warning = FALSE}
+```{r lme, include=FALSE, eval=FALSE, fig.width=10, fig.asp= 1, message=FALSE, echo = TRUE, warning = FALSE, include=FALSE}
 library(lme4)
 library(lmerTest)
 library(car)
@@ -640,12 +642,13 @@ Week_scatter <- ggscatter(data= df, x = "Week_int", y = "E", xlab = "Week_int", 
 ggarrange(Ehist, residscatter, D_scatter, Week_scatter, trt_bxp, nrow = 3, ncol = 2)
 ```
   
-## Auto-correlation plot 
-```{r, include=FALSE, eval=FALSE,}
+ 
+```{r, include=FALSE, eval=FALSE, include = FALSE}
+## Auto-correlation plot
 acf(E)
 ```
-this is currently not showing
+
 <br/> 
-```{r, include=FALSE, eval=FALSE,message=FALSE, echo = FALSE, warning = FALSE}
+```{r, include=FALSE, eval=FALSE,message=FALSE, echo = FALSE, warning = FALSE, include = FALSE}
 summary(M1)
 ```
