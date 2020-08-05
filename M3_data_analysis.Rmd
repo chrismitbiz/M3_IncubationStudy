@@ -159,6 +159,8 @@ data_noref <- data %>% dplyr::filter(Treatment != "Reference") %>%
   mutate(T39_Diff = Dieldrin / T39$Dieldrin * 100) %>% 
   mutate(loss = (T0$Dieldrin - Dieldrin) /  T0$Dieldrin * 100) %>% 
   mutate(loss39 = (T39$Dieldrin - Dieldrin) /  T39$Dieldrin * 100) 
+H20 <- read.csv("~/Documents/Study/LaTrobe/Research/phD/Milestone3/M3_IncubationStudy/data.csv") %>% select(H20)
+data_noref$H20 <- H20$H20
 
 data_fltrd <- data_noref %>% filter(SampleName != "t0_4.run") %>% filter(Treatment != "Reference")
 
@@ -215,8 +217,6 @@ dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "Poul
 CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T10_cum) %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
 
 dataCO2$µgCO2gsoilcum <- CO2cum$value
-
-
 ```
 
 ```{r boxplots1, fig.width=10, fig.asp=0.8, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, fig.cap="Boxplots of dieldrin concentrations and dieldrin concentrations relative to start of experiment (T0), including histograms."}
@@ -511,7 +511,7 @@ car::Anova(mod2, type = 3)
 
 # Summary 
 https://www.datanovia.com/en/lessons/repeated-measures-anova-in-r/
-```{r rmanova, echo=FALSE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=TRUE}
+```{r rmanova, echo=FALSE, message=FALSE, cache=TRUE, warning = FALSE, include=TRUE}
 # Normality
 library(rstatix)
 #data %>% filter(SampleName != "t0_4.run" ) %>% 
@@ -524,11 +524,17 @@ library(rstatix)
 #  rstatix::identify_outliers(Dieldrin) %>% select(Week,Treatment, Dieldrin, is.outlier, is.extreme)
 
 # Summary mean and sd
-data %>% filter(SampleName != "t0_4.run" ) %>%
+options(knitr.kable.NA = '')
+kableExtra::kable(data %>% filter(SampleName != "t0_4.run" ) %>%
   group_by(Week) %>%
-  get_summary_stats(Dieldrin, type = "mean_sd")
+  get_summary_stats(Dieldrin, type = "mean_se")) %>% kableExtra::kable_styling(full_width = F, position = "left",bootstrap_options = c( "condensed"), font_size = 11 )
+
 #Transform dieldrin values to improve distribution in order to meet normality assumption
 #remove 1 extreme outlier sample (Control, 1.33µg/g dieldrin)
+
+kableExtra::kable(data %>% filter(SampleName != "t0_4.run" ) %>%
+  group_by(Week, Treatment) %>%
+  get_summary_stats(Dieldrin, type = "mean_se")) %>% kableExtra::kable_styling(full_width = F, position = "left",bootstrap_options = c( "condensed"), font_size = 11 )
 ```
 
 ```{r rmanova2, echo=FALSE, message=FALSE, echo = TRUE, cache=TRUE, warning = FALSE, include=FALSE}
