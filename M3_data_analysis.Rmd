@@ -348,8 +348,7 @@ ggarrange(ggarrange(p3,ncol = 1, common.legend = TRUE), p2, ncol = 1, heights = 
 #ggboxplot( Sample_Peaks1, x = "Treatment", y = "GCArea_DDD",  ylab = "GCArea_DDD", fill = "TWeeks", palette = "simpsons") + rotate_x_text(angle = 45)
 ```
 
-The treatment-comparison of dieldrin concentrations (T0, T16, T39 and T52 combined) showed that biochar and the heat treatment were significantly lower compared to the control and all other treatments.  
-It was also apparent the the biochar and heat treatment contained soil with lowest dieldrin concentrations from the start of the experiment. This meant that the effect of these treatments was immediate. For biochar this could be explained by lower extractability of dieldrin due to immediate sorption to biochar. 
+The treatment-comparison of dieldrin concentrations showed that biochar and the heat treatment were significantly lower compared to the control and all other treatments. It was also apparent the the biochar and heat treatment contained soil with lowest dieldrin concentrations from the start of the experiment. This meant that the effect of these treatments was immediate. For biochar this could be explained by lower extractability of dieldrin due to immediate sorption to biochar. 
 
 <br/>  
 ```{r T0T16avg, echo=FALSE, fig.width=8, fig.asp=0.6,  message=FALSE, echo = FALSE, cache=TRUE, warning = FALSE, include=FALSE, fig.cap="Boxplots of dieldrin concentrations by treatment/week. Average values for T0 and T16 are shown."}
