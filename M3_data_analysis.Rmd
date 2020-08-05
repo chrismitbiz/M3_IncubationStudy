@@ -212,6 +212,9 @@ dataCO2 <- dataCO2 %>% convert_as_factor(Samples, Treatment, Replicate, Week, Ca
 dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "PoultryLitter", "Biochar", 
                                                                 "CitricAcid", "Inositol", "SodiumFormate", "SodiumAcetate",
                                                                 "FumaricAcid", "Heat","H2O2"))
+CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T10_cum) %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
+
+dataCO2$µgCO2gsoilcum <- CO2cum$value
 
 
 ```
@@ -300,13 +303,16 @@ ggarrange(p1, p2, common.legend = TRUE)
 
 Respiration is calculated as the sum of all currently measured traps (see next figure)
 
-```{r lineplotCO2fig3, fig.width=8, fig.asp=0.7,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotCO2fig3, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
 p2 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "µgCO2.Cgsoil", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
+p3 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2gsoilcum", ylab = "µgCO2.Cgsoil accumulated", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
+
+
 pdf(NULL)
-g1 <- ggpubr::ggarrange(p2, nrow = 1, ncol=1, common.legend = TRUE)
+g1 <- ggpubr::ggarrange(p2,p3, nrow = 2, ncol=1, common.legend = TRUE)
 x = dev.off()
 g1
 
