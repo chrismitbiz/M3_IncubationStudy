@@ -509,9 +509,9 @@ car::Anova(mod2, type = 3)
 
 ```
 
-# nMDS of peak area of soil extracts (hexane:acetone 1:1)  
-Peaks areas were normalised to internal standard (DDD)
-```{r phyloseqnmds, message=FALSE, echo = FALSE, warning = FALSE, results=FALSE}
+# nMDS of GC/ECD peak areas   
+Peaks areas from analysis soil extracts (hexane:acetone 1:1) were normalised to an internal standard (DDD)
+```{r phyloseqnmds, message=FALSE, echo = FALSE, warning = FALSE, results=FALSE, fig.cap="nMDS of peak areas of soil extracts (hexane:acetone 1:1)."}
 theme_set(theme_bw())  
 xaxis = c(-0.4, 0.4)
 
