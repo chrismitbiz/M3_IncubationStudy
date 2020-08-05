@@ -254,7 +254,7 @@ The cause of this drop is likely related to the 'ploughing' of soils in the jars
 The distribution of concentrations appears to be normal for T0, T39 and T52 but not for T16.
 
 <br/>
-```{r corplotfi2, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=FALSE }
+```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=FALSE }
 #Calculate the sum of CO2 produced per g of soil
 df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
@@ -272,8 +272,8 @@ df <- data.frame(Treatment = dataCO2[c(1:44),]$Treatment,
 ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)))
 ```
 
-
-```{r scatterplotfi2, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, fig.width=9 }
+# Scatter plot of respiration to dieldrin loss (%)
+```{r scatterplotfig2, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, fig.width=9 }
 #Calculate the sum of CO2 produced per g of soil
 df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
@@ -303,6 +303,7 @@ ggarrange(p1, p2, common.legend = TRUE)
 
 Respiration is calculated as the sum of all currently measured traps (see next figure)
 
+## Lineplots of respiration over time
 ```{r lineplotCO2fig3, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
@@ -322,6 +323,7 @@ There was a negative relationship of respiration and dieldrin loss. Dieldrin dis
 
 <br/>
 
+# Dieldrin concentrations 
 ```{r boxplfig4, echo=FALSE, fig.width=10, fig.asp=1,  message=FALSE, cache=TRUE, warning = FALSE, fig.cap="Boxplots of dieldrin concentrations by treatment, week/treatment (a) and treatment/week (b). Letters above boxplots indicate significantly different means at an 0.05 level (Fisher's least significant difference, holms corrected)."}
 
 # Boxplot dieldrin cc by treatment with sig. labels
@@ -414,7 +416,7 @@ ggpubr::ggarrange(ncol =1, nrow=2, ggarrange(l1, s1, ncol = 2, nrow =1, common.l
 ```
 <br/>
 
-# Dieldrin loss
+# Dieldrin loss (%)
 ```{r dlossfig6, echo=FALSE, fig.width=10, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. At T39 the soil was ploughed inside the jars. Two timelines were therefore assessed separately (T0−T39 and T39−T52). Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
 library(ggpubr)
 library(agricolae)
@@ -511,7 +513,7 @@ car::Anova(mod2, type = 3)
 
 # nMDS of GC/ECD peak areas   
 Peaks areas from analysis soil extracts (hexane:acetone 1:1) were normalised to an internal standard (DDD)
-```{r phyloseqnmds, message=FALSE, echo = FALSE, warning = FALSE, results=FALSE, fig.cap="nMDS of peak areas of soil extracts (hexane:acetone 1:1)."}
+```{r phyloseqnmdsfig7, message=FALSE, echo = FALSE, warning = FALSE, results=FALSE, fig.cap="nMDS of peak areas of soil extracts (hexane:acetone 1:1)."}
 theme_set(theme_bw())  
 xaxis = c(-0.4, 0.4)
 
@@ -543,7 +545,10 @@ nmds1 <- nmds1 + stat_ellipse(aes(group = Week), type = "t", linetype = 2)
 nmds1
 ```
 
-# Summary 
+The biochar resulted in significantly different composition of hydrophobic substances extracted from the soil. This composition has changed after the start of T0 but remained different to all other treatments.  
+
+<br/>
+# Table Summary 
 https://www.datanovia.com/en/lessons/repeated-measures-anova-in-r/
 ```{r rmanova, echo=FALSE, message=FALSE, cache=TRUE, warning = FALSE, include=TRUE}
 # Normality
