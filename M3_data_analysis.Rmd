@@ -301,7 +301,10 @@ ggarrange(p1, p2, common.legend = TRUE)
 
 ```
 
-Respiration is calculated as the sum of all currently measured traps (see next figure)
+Respiration is calculated as the sum of all currently measured traps (see next figure).  
+  
+There was a negative relationship of respiration and dieldrin loss. Dieldrin dissipated less in samples were microorganisms respired more carbon. This may be another hint that efficiency of carbon use may be linked to dieldrin degradation.
+
 
 ## Lineplots of respiration over time
 ```{r lineplotCO2fig3, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
@@ -319,8 +322,6 @@ g1
 
 ```
   
-There was a negative relationship of respiration and dieldrin loss. Dieldrin dissipated less in samples were microorganisms respired more carbon. This may be another hint that efficiency of carbon use may be linked to dieldrin degradation.
-
 <br/>
 
 # Dieldrin concentrations 
