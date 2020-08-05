@@ -509,6 +509,40 @@ car::Anova(mod2, type = 3)
 
 ```
 
+# nMDS of peak area of soil extracts (hexane:acetone 1:1)  
+Peaks areas were normalised to internal standard (DDD)
+```{r phyloseqnmds, message=FALSE, echo = FALSE, warning = FALSE, results=FALSE}
+theme_set(theme_bw())  
+xaxis = c(-0.4, 0.4)
+
+ratio.df <- read_csv("~/Documents/Study/LaTrobe/Research/phD/Milestone3/R_M3/Peak_analysis/ratio_df.csv") %>% column_to_rownames("id") 
+
+metadata <- readr::read_csv("~/Documents/Study/LaTrobe/Research/phD/Milestone3/M3_IncubationStudy/data.csv") 
+metadata <- metadata %>% filter(id != 'NA') %>% column_to_rownames("id")
+
+substances <- readr::read_csv("~/Documents/Study/LaTrobe/Research/phD/Milestone3/R_M3/Peak_analysis/substances_taxa.csv") %>% column_to_rownames("#Species") 
+
+physeq <- phyloseq::phyloseq(
+   phyloseq::otu_table(ratio.df, taxa_are_rows = F), 
+   phyloseq::tax_table(substances %>% as.matrix()),
+   phyloseq::sample_data(metadata) )
+
+physeq_log <- microbiome::transform(physeq, "log10")
+physeq_rel <- microbiome::transform(physeq, "compositional")
+physeq_clr <- microbiome::transform(physeq, "clr")
+
+
+physeq_log = phyloseq::filter_taxa(physeq_log, function(x) sum(x > 0) > (0.50*length(x)), TRUE)
+ord_nmds <- phyloseq::ordinate(physeq_log, "NMDS", "bray")
+
+nmds1 <- phyloseq::plot_ordination(physeq_log, ord_nmds , color = "Treatment", shape = "Week") + ggtitle("nMDS of hydrophobic substances from soil extracts (hexane:acetone), bray") + theme(plot.title = element_text(size = 8)) + theme(plot.title = element_text(size = 8)) + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank() ) + xlim(xaxis) + geom_hline(yintercept=0, linetype="dashed", color = "gray") + geom_vline(xintercept=0, linetype="dashed", color = "gray")
+
+#nmds1  <- nmds1  +  geom_text_repel(label = nmds1$data$days)
+nmds1 <- nmds1 + stat_ellipse(aes(group = Week), type = "t", linetype = 2)
+#nmds1 <- nmds1 + geom_polygon(aes(alpha = 0.6, fill = Rhizosphere,group = TreatmentID), stat = "identity") + guides(alpha = F)
+nmds1
+```
+
 # Summary 
 https://www.datanovia.com/en/lessons/repeated-measures-anova-in-r/
 ```{r rmanova, echo=FALSE, message=FALSE, cache=TRUE, warning = FALSE, include=TRUE}
