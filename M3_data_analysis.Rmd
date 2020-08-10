@@ -208,13 +208,13 @@ dataCO2 <- dataCO2 %>% mutate(Week_int = case_when(Week == "T02" ~ 02,
                               Week == "T06" ~ 06,
                               Week == "T08" ~ 08,
                               Week == "T10" ~ 10,
+                              Week == "T12" ~ 12,
                               TRUE ~0))
 dataCO2 <- dataCO2 %>% convert_as_factor(Samples, Treatment, Replicate, Week, Category)
 #order factors
-dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "PoultryLitter", "Biochar", 
-                                                                "CitricAcid", "Inositol", "SodiumFormate", "SodiumAcetate",
-                                                                "FumaricAcid", "Heat","H2O2"))
-CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T10_cum) %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
+dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "PoultryLitter", "Biochar", "CitricAcid", "Inositol", "SodiumFormate", "SodiumAcetate","FumaricAcid", "Heat","H2O2"))
+
+CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% mutate(T12_cum = T10_cum + T12)  %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum, T12_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T12_cum)  %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
 
 dataCO2$µgCO2gsoilcum <- CO2cum$value
 ```
@@ -256,7 +256,7 @@ The distribution of concentrations appears to be normal for T0, T39 and T52 but 
 <br/>
 ```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=FALSE }
 #Calculate the sum of CO2 produced per g of soil
-df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
+df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil)  %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
 #Create a df to compare the sum of CO2 produced with other variables
 df <- data.frame(Treatment = dataCO2[c(1:44),]$Treatment, 
@@ -273,7 +273,7 @@ ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)))
 ```
 
 # Scatter plot of respiration to dieldrin loss (%)
-```{r scatterplotfig2, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, fig.width=9 }
+```{r scatterplotfig2, fig.cap="Scatterplot of total dieldrin loss (%) and total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=9 }
 #Calculate the sum of CO2 produced per g of soil
 df <- dataCO2  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
