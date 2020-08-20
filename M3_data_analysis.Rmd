@@ -121,8 +121,10 @@ Analysis was done in two parts:
 - **T39－T52**    New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
   
 ## Result highlights  
-- The more microorganisms respired the less dieldrin dissipated  
-- 
+- In general, the more microorganisms respired the less dieldrin dissipated. (Fig. \@ref(fig:corplotfig4),  \@ref(fig:scatterplotfig7) and \@ref(fig:scatterplotfig11))
+- The initial respiration response to treatments was most indicative for dieldrin dissipation as the strongest correlations of accumulated respiration was in week 4 - 8. In other words where microbes respired the most after treatment, the least dieldrin dissipated.  
+- After re-applying the organic substrates in week 39, high respiration again correlated with low dieldrin dissipation (Fig. \@ref(fig:scatterplotfig10))
+- Fumaric acid was an exception. It somehow suppressed respiration after 2nd application in week 39 and also suppressed dieldrin loss from week 39 onward (Fig. \@ref(fig:dlossfig8))
 
 # Dieldrin concentrations summary
 
@@ -579,7 +581,7 @@ ggpubr::ggarrange(ncol =1, nrow=2, ggarrange(l1, s1, ncol = 2, nrow =1, common.l
 
 # Part B  analysis of T39－T52
 ## Dieldrin loss
-```{r dlossfig7, echo=FALSE, fig.width=6, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. At T39 the soil was ploughed inside the jars. Two timelines were therefore assessed separately (T0−T39 and T39−T52). Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
+```{r dlossfig8, echo=FALSE, fig.width=6, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. At T39 the soil was ploughed inside the jars. Two timelines were therefore assessed separately (T0−T39 and T39−T52). Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
 ## loss plot from week 52 since week 39 
 
 library(ggpubr)
@@ -598,7 +600,7 @@ ggarrange(p3, ncol = 1)
 ```
 
 ## Lineplots of respiration over time
-```{r lineplotCO2fig8, fig.width=8, fig.asp=1.5,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotCO2fig9, fig.width=8, fig.asp=1.5,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
 p2 <- dataCO2 %>% filter(Week %in% c("T42", "T44", "T46", "T48", "T52")) %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "Respiration (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
@@ -623,7 +625,7 @@ g1
 <br/>
 
 ## Scatter plot of respiration to dieldrin loss (%)
-```{r scatterplotfig9, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration (µg CO~2~-C g^-1^ soil) for weeks 42 to 52.", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=11, fig.asp=1}
+```{r scatterplotfig10, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration (µg CO~2~-C g^-1^ soil) for weeks 42 to 52.", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=11, fig.asp=1}
 #Calculate the sum of CO2 produced per g of soil and create a df for plotting
 df <- dataCO2 %>% filter(Week %in% c("T42","T44","T46", "T48","T52")) %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
@@ -653,7 +655,7 @@ ggarrange(p1, ggarrange(p2, p3, nrow = 1), nrow = 2)
 ```
 
 
-```{r scatterplotfig10, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration combined for weeks 1 - 16 and 42 to 52. Only treatments Control, Poultry Litter, Lime, Biochar, Heat and H202 are shown", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=7, fig.asp=0.75}
+```{r scatterplotfig11, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration combined for weeks 1 - 16 and 42 to 52. Only treatments Control, Poultry Litter, Lime, Biochar, Heat and H202 are shown", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=7, fig.asp=0.75}
 # Calculate the sum of CO2 produced per g of soil and create a df for plotting
 
 # Create a df to compare the sum of CO2 produced with other variables
