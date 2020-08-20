@@ -113,13 +113,16 @@ Sample_Peaks <- rbind(Sample_Peaks1, Sample_Peaks2)
   
   
 # Dieldrin concentrations summary 
-Method briefly: 44 jars of a soil contaminated with dieldrin since three decades were treated and incubated for a total of twelve months (Twelve treatments with four replicates). Dieldrin concentrations were measured at four times (T0, T16, T39, T52 - Weeks after treatments).
+## Method briefly: 
+44 jars of a soil contaminated with dieldrin since three decades were treated and incubated for a total of twelve months (Twelve treatments with four replicates). Dieldrin concentrations were measured at four times (T0, T16, T39, T52 - Weeks after treatments).
 
 Analysis was done in two parts:  
- 
 - **T0－T39** From day of treatment to 9 months after treatment
 - **T39－T52** New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
   
+## Highlights  
+- Accumulated Microbial respiration 
+
 ```{r dataoverview, echo=FALSE, fig.width=10, fig.asp=0.4, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE}
 library(hrbrthemes)
 library(ggpubr)
@@ -172,7 +175,6 @@ H20 <- read.csv("~/Documents/Study/LaTrobe/Research/phD/Milestone3/M3_Incubation
 data_noref$H20 <- H20$H20
 
 data_fltrd <- data_noref %>% filter(SampleName != "t0_4.run") %>% filter(Treatment != "Reference")
-
 
 ## Models to test if concentrations differ between weeks
 intercept <- mean(T0$Dieldrin[-4])
@@ -337,11 +339,13 @@ The treatment-comparison of dieldrin concentrations showed that biochar and the 
 # Total respiration, T0-T16 and T42-T52 combined
 df <- data_part2.2  %>%  select(Samples, Week, µgCO2.Cgsoil)  %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 df1 <- data_part2.2  %>%  select(Samples, Week, µgCO2gsoilcum)  %>% tidyr::spread(Week, µgCO2gsoilcum) %>% column_to_rownames("Samples")
+df2 <- data_noref %>%  select(SampleNo, Week, H20)  %>% tidyr::spread(Week, H20) %>% column_to_rownames("SampleNo")
+
 df1 <-  df1 %>% dplyr::rename(RespCumT02 = T02) %>% dplyr::rename(RespCumT04 = T04) %>% dplyr::rename(RespCumT06 = T06) %>% dplyr::rename(RespCumT08 = T08) %>% dplyr::rename(RespCumT10 = T10) %>% dplyr::rename(RespCumT12 = T12) %>% dplyr::rename(RespCumT14 = T14) %>% dplyr::rename(RespCumT16 = T16) %>% dplyr::rename(RespCumT42 = T42) %>% dplyr::rename(RespCumT44 = T44) %>% dplyr::rename(RespCumT46 = T46) %>% dplyr::rename(RespCumT48 = T48) %>% dplyr::rename(RespCumT52 = T52)
 
 #Create a df to compare the sum of CO2 produced with other variables
 df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
-           TotalRespiration = df, df1, 
+           TotalRespiration = df, df1, df2,
            loss39to52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss39)),
            TotalLossT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss)),
            #TotalLossT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(loss)),
