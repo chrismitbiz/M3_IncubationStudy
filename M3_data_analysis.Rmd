@@ -1,7 +1,7 @@
 ---
 title: "Soils contaminated with dieldrin since three decades"
 author: "CK"
-date: "13/08/2020"
+date: "20/08/2020"
 output: 
  bookdown::html_document2:
    toc: yes
@@ -331,7 +331,7 @@ The treatment-comparison of dieldrin concentrations showed that biochar and the 
 
 # Dieldrin loss correlations to respiration
 ## Accumulated respiration
-```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
+```{r corplotfig4, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
 #Calculate the sum of CO2 produced per g of soil
 
 # Total respiration, T0-T16 and T42-T52 combined
@@ -356,9 +356,7 @@ ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)), type = 'lower')
 
 Accumulated respiration is correlated to total dieldrin loss. The higher the microbial respiration, the less dieldrin has dissipated. This was most pronounced with the respiration after 4-8 weeks, which correlated most strongly with the total dieldrin loss after 52 weeks (12 months). 
   
-  
-## Rate of respiration (µg CO~2~-C  g soil day^-2^)
-```{r corplot2, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
+```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1, include = FALSE}
 #Calculate the sum of CO2 produced per g of soil
 
 # Total respiration, T0-T16 and T42-T52 combined
@@ -376,6 +374,7 @@ df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment,
            #PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
           #DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
            #DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)),
+          DieldrinT0 = as_vector(data_noref %>% dplyr::filter(Week == "T0") %>% dplyr::select(Dieldrin)),
            DieldrinT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(Dieldrin)))
 
 #p.mat <- cor_pmat(df %>% dplyr::select(-Treatment))
@@ -384,13 +383,12 @@ p1 <- ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)),
 p1
 ```
 
-  
 <br/>  
 
 
 # Part A, analysis of T0－T39
 ## Dieldrin loss
-```{r dlossfig4, echo=FALSE, fig.width=6, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
+```{r dlossfig5, echo=FALSE, fig.width=6, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
 
 library(ggpubr)
 library(agricolae)
@@ -458,7 +456,7 @@ ggarrange(p1, ncol = 1)
 - Soils treated with biochar showed greatest mean dieldrin dissipation, followed by the no-treatment-control. 
   
 ## Lineplots of respiration over time
-```{r lineplotCO2fig5, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotCO2fig6, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
 p2 <- dataCO2 %>% filter(Week %in% c("T02","T04","T06","T08","T10","T12","T14", "T16")) %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "Respiration (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
@@ -480,7 +478,7 @@ g1
 <br/>
 
 ## Scatter plot of respiration to dieldrin loss (%)
-```{r scatterplotfig6, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration  of the first 16 weeks (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=9 }
+```{r scatterplotfig7, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration of the first 16 weeks (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=9 }
 # Calculate the sum of CO2 produced per g of soil and create a df for plotting
 df <- data_part1  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
