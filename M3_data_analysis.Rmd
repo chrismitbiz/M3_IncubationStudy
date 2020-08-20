@@ -112,16 +112,19 @@ Sample_Peaks <- rbind(Sample_Peaks1, Sample_Peaks2)
 ```
   
   
-# Dieldrin concentrations summary 
-## Method briefly: 
+ 
+# Method briefly: 
 44 jars of a soil contaminated with dieldrin since three decades were treated and incubated for a total of twelve months (Twelve treatments with four replicates). Dieldrin concentrations were measured at four times (T0, T16, T39, T52 - Weeks after treatments).
 
 Analysis was done in two parts:  
-- **T0－T39** From day of treatment to 9 months after treatment
-- **T39－T52** New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
+- **T0－T39**     From day of treatment to 9 months after treatment  
+- **T39－T52**    New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
   
-## Highlights  
-- Accumulated Microbial respiration 
+## Result highlights  
+- The more microorganisms respired the less dieldrin dissipated  
+- 
+
+# Dieldrin concentrations summary
 
 ```{r dataoverview, echo=FALSE, fig.width=10, fig.asp=0.4, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE}
 library(hrbrthemes)
