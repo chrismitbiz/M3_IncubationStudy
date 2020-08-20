@@ -228,6 +228,7 @@ dataCO2 <- dataCO2 %>% mutate(Week_int = case_when(Week == "T02" ~ 02,
                               Week == "T44" ~ 44,
                               Week == "T46" ~ 46,
                               Week == "T48" ~ 48,
+                              Week == "T52" ~ 52,
                               TRUE ~0))
 dataCO2 <- dataCO2 %>% convert_as_factor(Samples, Treatment, Replicate, Week, Category)
 #order factors
@@ -236,13 +237,17 @@ dataCO2$Treatment <- factor(dataCO2$Treatment, levels=c("Control", "Lime", "Poul
 # Create a df with accumulated respiration for T0-T16
 CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% mutate(T12_cum = T10_cum + T12) %>% mutate(T14_cum = T12_cum + T14) %>% mutate(T16_cum = T14_cum + T16)  %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum, T12_cum, T14_cum, T16_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T16_cum)  %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
 
-data_part1 <- dataCO2 %>% rownames_to_column("id") %>% filter(id == 1:nrow(CO2cum)) %>% mutate(µgCO2gsoilcum = CO2cum$value)
+data_part1 <- dataCO2 %>% rownames_to_column("id") %>% filter(id %in% 1:nrow(CO2cum)) %>% mutate(µgCO2gsoilcum = CO2cum$value)
 
 # Create a df with accumulated respiration for T40-T52
-CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T44_cum = T42 + T44) %>% mutate(T46_cum = T44_cum + T46) %>% mutate(T48_cum = T46_cum + T48) %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T42, T44_cum,T46_cum, T48_cum) %>% pivot_longer(names_to = "Week",  cols = T42:T48_cum)  %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
+CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T44_cum = T42 + T44) %>% mutate(T46_cum = T44_cum + T46) %>% mutate(T48_cum = T46_cum + T48) %>% mutate(T52_cum = T48_cum + T52) %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T42, T44_cum,T46_cum, T48_cum, T52_cum) %>% pivot_longer(names_to = "Week",  cols = T42:T52_cum)  %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
 
-data_part2 <- dataCO2 %>% rownames_to_column("id") %>% filter(id == 353:nrow(dataCO2)) %>% mutate(µgCO2gsoilcum = CO2cum$value)
+data_part2 <- dataCO2 %>% rownames_to_column("id") %>% filter(id %in% 353:nrow(dataCO2)) %>% mutate(µgCO2gsoilcum = CO2cum$value)
 
+
+CO2cum <- dataCO2  %>% select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::pivot_wider(names_from= c(Week), values_from = µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% mutate(T04_cum = T02 + T04) %>% mutate(T06_cum = T04_cum + T06) %>% mutate(T08_cum = T06_cum + T08) %>% mutate(T10_cum = T08_cum + T10)  %>% mutate(T12_cum = T10_cum + T12) %>% mutate(T14_cum = T12_cum + T14) %>% mutate(T16_cum = T14_cum + T16) %>% mutate(T42_cum = T16_cum + T42) %>% mutate(T44_cum = T42_cum + T44) %>% mutate(T46_cum = T44_cum + T46) %>% mutate(T48_cum = T46_cum + T48) %>% mutate(T52_cum = T48_cum + T52) %>% rownames_to_column("Samples") %>% dplyr::select(Samples, T02, T04_cum,T06_cum, T08_cum, T10_cum, T12_cum, T14_cum, T16_cum, T42_cum, T44_cum,T46_cum, T48_cum, T52_cum) %>% pivot_longer(names_to = "Week",  cols = T02:T52_cum)  %>% dplyr::mutate_all(type.convert) %>% arrange(Week, Samples)
+
+data_part2.2 <- dataCO2 %>% rownames_to_column("id") %>% filter(id %in% 1:nrow(dataCO2)) %>% mutate(µgCO2gsoilcum = CO2cum$value)
 ```
 
 ```{r boxplotsfig1, fig.width=10, fig.asp=0.8, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, fig.cap="Boxplots of dieldrin concentrations and dieldrin concentrations relative to start of experiment (T0), including histograms."}
@@ -323,6 +328,63 @@ g1
 
 The treatment-comparison of dieldrin concentrations showed that biochar and the heat treatment were significantly lower compared to the control and all other treatments. It was also apparent the the biochar and heat treatment contained soil with lowest dieldrin concentrations from the start of the experiment. This meant that the effect of these treatments was immediate. For biochar this could be explained by lower extractability of dieldrin due to immediate sorption to biochar. 
 
+
+# Dieldrin loss correlations to respiration
+## Accumulated respiration
+```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
+#Calculate the sum of CO2 produced per g of soil
+
+# Total respiration, T0-T16 and T42-T52 combined
+df <- data_part2.2  %>%  select(Samples, Week, µgCO2.Cgsoil)  %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
+df1 <- data_part2.2  %>%  select(Samples, Week, µgCO2gsoilcum)  %>% tidyr::spread(Week, µgCO2gsoilcum) %>% column_to_rownames("Samples")
+df1 <-  df1 %>% dplyr::rename(RespCumT02 = T02) %>% dplyr::rename(RespCumT04 = T04) %>% dplyr::rename(RespCumT06 = T06) %>% dplyr::rename(RespCumT08 = T08) %>% dplyr::rename(RespCumT10 = T10) %>% dplyr::rename(RespCumT12 = T12) %>% dplyr::rename(RespCumT14 = T14) %>% dplyr::rename(RespCumT16 = T16) %>% dplyr::rename(RespCumT42 = T42) %>% dplyr::rename(RespCumT44 = T44) %>% dplyr::rename(RespCumT46 = T46) %>% dplyr::rename(RespCumT48 = T48) %>% dplyr::rename(RespCumT52 = T52)
+
+#Create a df to compare the sum of CO2 produced with other variables
+df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
+           TotalRespiration = df, df1, 
+           loss39to52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss39)),
+           TotalLossT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss)),
+           #TotalLossT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(loss)),
+           TotalLossT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(loss)),
+           # = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(GCArea_Dieldrin) ) , 
+           #PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
+          #DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
+           #DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)),
+           DieldrinT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(Dieldrin)))
+ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)), type = 'lower')
+```
+
+Accumulated respiration is correlated to total dieldrin loss. The higher the microbial respiration, the less dieldrin has dissipated. This was most pronounced with the respiration after 4-8 weeks, which correlated most strongly with the total dieldrin loss after 52 weeks (12 months). 
+  
+  
+## Rate of respiration (µg CO~2~-C  g soil day^-2^)
+```{r corplot2, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
+#Calculate the sum of CO2 produced per g of soil
+
+# Total respiration, T0-T16 and T42-T52 combined
+df1 <- data_part2.2  %>%  select(Samples, Week, µgCO2.Cgsoilday)  %>% tidyr::spread(Week, µgCO2.Cgsoilday) %>% column_to_rownames("Samples")
+df1 <-  df1 %>% dplyr::rename(RespT02 = T02) %>% dplyr::rename(RespT04 = T04) %>% dplyr::rename(RespT06 = T06) %>% dplyr::rename(RespT08 = T08) %>% dplyr::rename(RespT10 = T10) %>% dplyr::rename(RespT12 = T12) %>% dplyr::rename(RespT14 = T14) %>% dplyr::rename(RespT16 = T16) %>% dplyr::rename(RespT42 = T42) %>% dplyr::rename(RespT44 = T44) %>% dplyr::rename(RespT46 = T46) %>% dplyr::rename(RespT48 = T48) %>% dplyr::rename(RespT52 = T52)
+
+#Create a df to compare the sum of CO2 produced with other variables
+df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
+           df1, 
+           loss39to52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss39)),
+           TotalLossT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss)),
+           #TotalLossT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(loss)),
+           TotalLossT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(loss)),
+           # = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(GCArea_Dieldrin) ) , 
+           #PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
+          #DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
+           #DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)),
+           DieldrinT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(Dieldrin)))
+
+#p.mat <- cor_pmat(df %>% dplyr::select(-Treatment))
+p1 <- ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)),
+  type = "lower")
+p1
+```
+
+  
 <br/>  
 
 
@@ -419,12 +481,12 @@ g1
 
 ## Scatter plot of respiration to dieldrin loss (%)
 ```{r scatterplotfig6, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration  of the first 16 weeks (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=9 }
-#Calculate the sum of CO2 produced per g of soil and create a df for plotting
+# Calculate the sum of CO2 produced per g of soil and create a df for plotting
 df <- data_part1  %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
 df1 <- data_part1  %>%  select(Samples, Week, µgCO2gsoilcum)  %>% tidyr::spread(Week, µgCO2gsoilcum) %>% column_to_rownames("Samples")
 
-#Create a df to compare the sum of CO2 produced with other variables
+# Create a df to compare the sum of CO2 produced with other variables
 df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
            TotalRespiration = df, 
            df1,
@@ -434,14 +496,13 @@ df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment,
            TotalLossT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(loss)),
            PeakareaT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(GCArea_Dieldrin) ) , 
            PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
-          DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
+           DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
            DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)) )
 
-
-p1 <- ggscatter(data = df, x= "TotalRespiration", y = "TotalLossT52", color = "Treatment", palette = "simpsons", ylab = c("Dieldrin loss after 52 weeks (%)"), xlab = ("Total microbial respiration (µg CO2-C / g soil)"))+ stat_cor(method = "spearman",
+p1 <- ggscatter(data = df, x= "TotalRespiration", y = "TotalLossT52", color = "Treatment", palette = "simpsons", ylab = c("Total dieldrin loss after 52 weeks (%)"), xlab = ("Total microbial respiration (µg CO2-C / g soil)"))+ stat_cor(method = "spearman",
    aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
 )
-p2 <- ggscatter(data = df, x= "TotalRespiration", y = "TotalLossT39", color = "Treatment", palette = "simpsons",ylab = c("Dieldrin loss after 39 weeks (%)"), xlab = ("Total microbial respiration (µg CO2-C / g soil)")) + stat_cor(method = "spearman",
+p2 <- ggscatter(data = df, x= "TotalRespiration", y = "TotalLossT39", color = "Treatment", palette = "simpsons",ylab = c("Total dieldrin loss after 39 weeks (%)"), xlab = ("Total microbial respiration (µg CO2-C / g soil)")) + stat_cor(method = "spearman",
    aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
 )
 
@@ -458,28 +519,6 @@ Respiration was calculated as the sum of the first 16 weeks of incubation (µg C
 
 
 
-```{r corplot, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=FALSE }
-#Calculate the sum of CO2 produced per g of soil
-df <- data_part1  %>%  select(Samples, Week, µgCO2.Cgsoil)  %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
-
-df1 <- data_part1  %>%  select(Samples, Week, µgCO2gsoilcum)  %>% tidyr::spread(Week, µgCO2gsoilcum) %>% column_to_rownames("Samples")
-
-#Create a df to compare the sum of CO2 produced with other variables
-df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
-           TotalRespiration = df, df1, 
-           loss39to52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss39)),
-           TotalLossT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss)),
-           TotalLossT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(loss)),
-           TotalLossT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(loss)),
-           PeakareaT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(GCArea_Dieldrin) ) , 
-           PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
-          DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
-           DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)),
-           DieldrinT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(Dieldrin)))
-ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment)))
-```
-
-  
 <br/>
 
 
@@ -554,16 +593,17 @@ ggarrange(p3, ncol = 1)
 ```
 
 ## Lineplots of respiration over time
-```{r lineplotCO2fig8, fig.width=8, fig.asp=1,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
+```{r lineplotCO2fig8, fig.width=8, fig.asp=1.5,  message=FALSE, echo = FALSE, cache=FALSE, warning = FALSE, fig.cap="Respiration  (µg CO~2~-C g^-1^ soil) across time. Error bars show the standard error of the mean of four replicates."}
 #p1 <- dataCO2  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "µgCO2.Cgsoilday", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
-p2 <- dataCO2 %>% filter(Week %in% c("T42", "T44", "T46", "T48")) %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoil", ylab = "Respiration (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
+p2 <- dataCO2 %>% filter(Week %in% c("T42", "T44", "T46", "T48", "T52")) %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2.Cgsoilday", ylab = "Respiration (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
-p3 <- data_part2  %>% filter(Week %in%c("T42", "T44", "T46", "T48"))  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2gsoilcum", ylab = "Respiration accumulated (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
+p3 <- data_part2  %>% filter(Week %in%c("T42", "T44", "T46", "T48", "T52"))  %>% ggpubr::ggline(data = ., x = "Week_int", y = "µgCO2gsoilcum", ylab = "Respiration accumulated (µg CO2-C/g soil)", add = c("mean_se"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
+p4 <- data_part2  %>% filter(Week %in%c("T42", "T44", "T46", "T48", "T52"))  %>% ggpubr::ggscatter(data = ., x = "Week_int", y = "µgCO2gsoilcum", ylab = "Respiration accumulated (µg CO2-C/g soil)", add = c("reg.line"), color = "Treatment", palette = "simpsons") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(aes(group = Treatment), label = "p.signif", method = "kruskal")
 
 pdf(NULL)
-g1 <- ggpubr::ggarrange(p2,p3, nrow = 2, ncol=1, common.legend = TRUE)
+g1 <- ggpubr::ggarrange(p2,p3, p4, nrow = 3, ncol=1, common.legend = TRUE)
 x = dev.off()
 g1
 
@@ -578,9 +618,9 @@ g1
 <br/>
 
 ## Scatter plot of respiration to dieldrin loss (%)
-```{r scatterplotfig9, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration, currently only for week 42 (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=11, fig.asp=1}
+```{r scatterplotfig9, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration (µg CO~2~-C g^-1^ soil) for weeks 42 to 52.", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=11, fig.asp=1}
 #Calculate the sum of CO2 produced per g of soil and create a df for plotting
-df <- dataCO2 %>% filter(Week %in% c("T42","T44","T46", "T48")) %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
+df <- dataCO2 %>% filter(Week %in% c("T42","T44","T46", "T48","T52")) %>%  select(Samples, Week, µgCO2.Cgsoil) %>% tidyr::spread(Week, µgCO2.Cgsoil) %>% column_to_rownames("Samples") %>% rowSums()
 
 #df1 <- data_part1  %>%  select(Samples, Week, µgCO2gsoilcum)  %>% tidyr::spread(Week, µgCO2gsoilcum) %>% column_to_rownames("Samples")
 
@@ -608,7 +648,27 @@ ggarrange(p1, ggarrange(p2, p3, nrow = 1), nrow = 2)
 ```
 
 
-This is ongoing and more NaOH traps have to be measured
+```{r scatterplotfig10, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration combined for weeks 1 - 16 and 42 to 52. Only treatments Control, Poultry Litter, Lime, Biochar, Heat and H202 are shown", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=7, fig.asp=0.75}
+# Calculate the sum of CO2 produced per g of soil and create a df for plotting
+
+# Create a df to compare the sum of CO2 produced with other variables
+df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment, 
+           TotalRespiration = data_part2.2 %>% filter(Week == "T52") %>% select(µgCO2gsoilcum) , 
+           loss39to52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss39)),
+           TotalLossT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(loss)),
+           TotalLossT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(loss)),
+           TotalLossT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(loss)),
+           PeakareaT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(GCArea_Dieldrin) ) , 
+           PeakareaT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(GCArea_Dieldrin)),
+          DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
+           DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)) )
+
+
+p1 <- ggscatter(data = df %>% filter(Treatment %in% c("Control","Lime","Biochar","PoultryLitter", "Heat", "H2O2")), x= "µgCO2gsoilcum", y = "TotalLossT52", color = "Treatment", palette = "simpsons",ylab = c("Dieldrin loss (%) after 52 weeks"), xlab = ("Total microbial respiration (µg CO2-C / g soil)"))  + stat_cor(method = "spearman", aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")) )
+
+
+p1
+```
 
 <br/>
 
