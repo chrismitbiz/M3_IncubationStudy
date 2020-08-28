@@ -9,11 +9,15 @@ output:
    number_sections: false
 editor_options: 
   chunk_output_type: console
+bibliography: "library.bib"
+biblio-style: "apalike"
+link-citations: yes
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
   encoding=encoding,
   output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+  
 ---
 
 ```{r raw_peakdata_standards_dieldrin, message=FALSE, echo = FALSE, warning = FALSE}
@@ -114,13 +118,17 @@ Sample_Peaks <- rbind(Sample_Peaks1, Sample_Peaks2)
   
  
 # Method briefly: 
+A paddock consisting of organic matter rich pasture soil with high residue concentrations of the legacy pollutant dieldrin was sampled in August 2018 (0-10 cm). Dieldrin was the main use of control for the 'name?' beetle in potato cropping until 1987. Total dieldrin dissipation in this surface soil was 50% since 1988 and remaining extractable residues in 2017 were 1.16 µg g-1 soil dry weight (± 0.07 SE) [@Krohn2019]. Minor concentrations of dichlorodiphenyltrichloroethane including its principle congeners were also detected (0.11 µg g-1 soil dry weight (± 0.01 SE) [@Krohn2019].  
+  
+Soil was air dried in bags overnight, sieved (4 mm) and waterholding capacity (10 kPa) measured the next day. Two days after field sampling the water content (16 hrs at 105˚C) was measured and 12 treatments applied in zip-lock bags at 80% of waterholding capacity, and 228 g of each treatment divided into four jars with a total of 44 jars for all treatments. Soils in jars were sampled at T0, T2, T4, T8, T16, T39 and T52 and stored at -20˚C until further processed. 
+  
 44 jars of a soil contaminated with dieldrin since three decades were treated and incubated for a total of twelve months (Twelve treatments with four replicates). Dieldrin concentrations were measured at four times (T0, T16, T39, T52 - Weeks after treatments).
 
 Analysis was done in two parts:  
 - **T0－T39**     From day of treatment to 9 months after treatment  
 - **T39－T52**    New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
   
-## Result highlights  
+# Result highlights  
 - In general, the more microorganisms respired the less dieldrin dissipated. (Fig. \@ref(fig:corplotfig4),  \@ref(fig:scatterplotfig7) and \@ref(fig:scatterplotfig11))
 - The initial respiration response to treatments was most indicative for dieldrin dissipation as the strongest correlations of accumulated respiration was in week 4 - 8. In other words where microbes respired the most after treatment, the least dieldrin dissipated.  
 - After re-applying the organic substrates in week 39, high respiration again correlated with low dieldrin dissipation (Fig. \@ref(fig:scatterplotfig10))
@@ -128,7 +136,7 @@ Analysis was done in two parts:
 
 # Dieldrin concentrations summary
 
-```{r dataoverview, echo=FALSE, fig.width=10, fig.asp=0.4, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE}
+```{r dataoverview, fig.width=10, fig.asp=0.4, message=FALSE, echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE}
 library(hrbrthemes)
 library(ggpubr)
 library(tidyverse)
@@ -209,6 +217,25 @@ kableExtra::kable(data %>% filter(SampleName != "t0_4.run" ) %>%
   group_by(Week) %>%
   get_summary_stats(Dieldrin, type = "mean_se")) %>% kableExtra::kable_styling(full_width = F, position = "left",bootstrap_options = c( "condensed"), font_size = 11 )
 
+```
+
+```{r comparisonof201517withcurrent, echo = FALSE, warning = FALSE, include=FALSE}
+metadata<- readr::read_tsv("~/Documents/Study/LaTrobe/Research/phD/Milestone2_Field_Survey/M2_Bacteria/M2_Qiime_output_Bacteria2020run/metadata.tsv") 
+
+metadata2 <- metadata[c(2:nrow(metadata)),c(1:length(metadata))] %>%
+  tibble::rownames_to_column("spl") %>%
+  dplyr::mutate_all(type.convert) %>%
+  dplyr::mutate_if(is.factor, as.character) %>%
+  tibble::column_to_rownames("spl")
+
+# Summary stats of the three replicates from paddock 11 (12AcrePaddock), Dieldrin values are the mean from 2015 and 2017 measurements
+df <- metadata2 %>% filter(Paddock == 11) %>% select(Farm, D1517, DDT1517, Dloss)
+rstatix::get_summary_stats(df)
+
+# Compare with new samples from August 2018 of the same paddock
+rstatix::get_summary_stats(data_fltrd %>% filter(Treatment == "Control") %>% filter(Week == "T0") %>% select(Dieldrin))
+# Result: The total dieldrin concentration of the control in 2018 was within 3.3% of the measurements from 2015/2017.
+# This validated the dieldrin extraction method and GCECD method employed in the LaTrobe/DJPR lab is comparable to the National Measurement Institute. 
 ```
 
 ```{r dataCO2, message=FALSE, echo = FALSE, warning = FALSE}
@@ -885,3 +912,5 @@ acf(E)
 ```{r, include=FALSE, eval=FALSE,message=FALSE, echo = FALSE, warning = FALSE, include = FALSE}
 summary(M1)
 ```
+
+# References
