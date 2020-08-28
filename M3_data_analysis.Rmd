@@ -129,10 +129,14 @@ Analysis was done in two parts:
 - **T39－T52**    New treatment at 9 months and incubated for another 3 months reaching a total of 12 months. The new treatment was 'ploughing', i.e. aggregates were broken up. Additionally the organic substrates were re-applied. 
   
 # Result highlights  
-- In general, the more microorganisms respired the less dieldrin dissipated. (Fig. \@ref(fig:corplotfig4),  \@ref(fig:scatterplotfig7) and \@ref(fig:scatterplotfig11))
-- The initial respiration response to treatments was most indicative for dieldrin dissipation as the strongest correlations of accumulated respiration was in week 4 - 8. In other words where microbes respired the most after treatment, the least dieldrin dissipated.  
+- Addition of labile carbon appeared to inhibit dieldrin dissipation  
+  - In general, the more microorganisms respired the less dieldrin dissipated. (Fig. \@ref(fig:corplotfig4),  \@ref(fig:scatterplotfig7) and \@ref(fig:scatterplotfig11))  
+- Poultry litter inhibited dieldrin dissipation while poultry litter biochar did not 
+- Soils treated with poultry litter biochar contained lowest extractable dieldrin residues at the end of the incubation  
 - After re-applying the organic substrates in week 39, high respiration again correlated with low dieldrin dissipation (Fig. \@ref(fig:scatterplotfig10))
-- Fumaric acid was an exception. It somehow suppressed respiration after 2nd application in week 39 and also suppressed dieldrin loss from week 39 onward (Fig. \@ref(fig:dlossfig8))
+- Fumaric acid was an exception. It somehow suppressed respiration after 2nd application in week 39 and also suppressed dieldrin loss from week 39 onward (Fig. \@ref(fig:dlossfig8))  
+- The initial respiration response to treatments was most indicative for dieldrin dissipation as the strongest correlations of accumulated respiration was in week 4 - 8. In other words where microbes respired the most after treatment, the least dieldrin dissipated.  
+
 
 # Dieldrin concentrations summary
 
@@ -720,6 +724,22 @@ df <- data %>% filter(SampleName != "t0_4.run" )
 mod3 <- lm(I(Dieldrin - intercept) ~ Treatment, data = df)
 summary(mod3)
 car::Anova(mod2, type = 3)
+
+```
+
+# Part C  analysis of T0－T52
+```{r dlosfig12, echo=FALSE, fig.width=6, fig.asp=1, include=TRUE, fig.cap="Residues loss in percent. Error bars show the standard error of the mean of four replicates. Letters show differences of the mean after multiple comparison tests (Fisher's least significant difference, holm correct *p* value)."}
+
+library(ggpubr)
+library(agricolae)
+df <-  data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" )
+df$Treatment <- factor(df$Treatment)
+kr.test <- with(df,kruskal(loss,Treatment,group=TRUE, p.adj="holm"))
+levels  <- levels(df$Treatment) %>% as.data.frame()%>% filter(. != "Reference")
+groups1 <- kr.test$groups %>% rownames_to_column("Treatment")
+groups1 <- groups1[match(levels$., groups1$Treatment),]
+label <- as.vector(groups1$groups)
+data_noref %>% filter(SampleNo != 4 ) %>% filter(Week == "T52" ) %>%  ggpubr::ggbarplot(data =., x = "Treatment", y = "loss",  fill = "Treatment", palette = "simpsons", facet.by = "Week", legend = "none",add = c("mean_se"), lab.vjust = -2, xlab = FALSE, ylab = "Dieldrin loss (%) T0 - T52") + ggpubr::rotate_x_text(angle = 45) + ggpubr::stat_compare_means(method = "kruskal", label.y = 20.5, label.x = 2) + geom_hline(yintercept = 0, linetype = 2) + annotate("text", x = groups1$Treatment, y=c(20,20,20,20,20,20,20,20,20,20,20), label = label) + ggtitle("Dieldrin loss from T0 to T52")
 
 ```
 
