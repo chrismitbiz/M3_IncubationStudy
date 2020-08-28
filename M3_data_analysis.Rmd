@@ -118,7 +118,7 @@ Sample_Peaks <- rbind(Sample_Peaks1, Sample_Peaks2)
   
  
 # Method briefly: 
-A paddock consisting of organic matter rich pasture soil with high residue concentrations of the legacy pollutant dieldrin was sampled in August 2018 (0-10 cm). Dieldrin was the main use of control for the 'name?' beetle in potato cropping until 1987. Total dieldrin dissipation in this surface soil was 50% since 1988 and remaining extractable residues in 2017 were 1.16 µg g-1 soil dry weight (± 0.07 SE) [@Krohn2019]. Minor concentrations of dichlorodiphenyltrichloroethane including its principle congeners were also detected (0.11 µg g-1 soil dry weight (± 0.01 SE) [@Krohn2019].  
+A paddock consisting of organic matter rich pasture soil with high residue concentrations of the legacy pollutant dieldrin was sampled in August 2018 (0-10 cm). Dieldrin was the main use of control for the 'name?' beetle in potato cropping until 1987. Total dieldrin dissipation in this surface soil was 50% since 1988 and remaining extractable residues in 2017 were 1.16 µg g-1 soil dry weight (± 0.07 SE) [@Krohn2019]. Minor concentrations of dichlorodiphenyltrichloroethane including its congener dichlorodiphenyldichloroethylene were also detected (0.11 µg g-1 soil dry weight (± 0.01 SE) [@Krohn2019].  
   
 Soil was air dried in bags overnight, sieved (4 mm) and waterholding capacity (10 kPa) measured the next day. Two days after field sampling the water content (16 hrs at 105˚C) was measured and 12 treatments applied in zip-lock bags at 80% of waterholding capacity, and 228 g of each treatment divided into four jars with a total of 44 jars for all treatments. Soils in jars were sampled at T0, T2, T4, T8, T16, T39 and T52 and stored at -20˚C until further processed. 
   
