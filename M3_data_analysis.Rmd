@@ -178,6 +178,7 @@ Analysis was done in two parts:
 # Result highlights  
 - Addition of labile carbon appeared to inhibit dieldrin dissipation  
   - In general, the more microorganisms respired the less dieldrin dissipated.  
+  - High respiration further resulted in lowest C:N ratios at the end - indicating processing of the labile Carbon
 - Poultry litter inhibited dieldrin dissipation while poultry litter biochar did not 
 - Soils treated with poultry litter biochar contained lowest extractable dieldrin residues at the end of the incubation  
 - After re-applying the organic substrates in week 39, high respiration again correlated with low dieldrin dissipation 
