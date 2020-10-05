@@ -783,7 +783,6 @@ ggarrange(p1, p2, p3)
 <br/>
 
 # Correlations 
-## Accumulated respiration
 ```{r corplotfig5, fig.cap="Correlations of total respiration (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=TRUE, include=TRUE, fig.width=8, fig.asp=1 }
 #Calculate the sum of CO2 produced per g of soil
 
