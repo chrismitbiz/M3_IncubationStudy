@@ -823,16 +823,31 @@ CN_diff <- (dataCHN %>% filter(Week == "T52") %>% select(CN)) - (dataCHN %>% fil
 C_diff <- (dataCHN %>% filter(Week == "T52") %>% select(C)) - (dataCHN %>% filter(Week == "T0") %>% select(C))
 H_diff <- (dataCHN %>% filter(Week == "T52") %>% select(H)) - (dataCHN %>% filter(Week == "T0") %>% select(H))
 HC_diff <- (dataCHN %>% filter(Week == "T52") %>% select(HC)) - (dataCHN %>% filter(Week == "T0") %>% select(HC))
-H <- dataCHN %>% filter(Week == "T52") %>% select(H)
-HC <- dataCHN %>% filter(Week == "T52") %>% select(HC)
-CN <- dataCHN %>% filter(Week == "T52") %>% select(CN)
-C <- dataCHN %>% filter(Week == "T52") %>% select(HC)
+H52 <- dataCHN %>% filter(Week == "T52") %>% select(H)
+HC52 <- dataCHN %>% filter(Week == "T52") %>% select(HC)
+CN52 <- dataCHN %>% filter(Week == "T52") %>% select(CN)
+C52 <- dataCHN %>% filter(Week == "T52") %>% select(C)
+
+H39 <- dataCHN %>% filter(Week == "T39") %>% select(H)
+HC39 <- dataCHN %>% filter(Week == "T39") %>% select(HC)
+CN39 <- dataCHN %>% filter(Week == "T39") %>% select(CN)
+C39 <- dataCHN %>% filter(Week == "T39") %>% select(C)
+
+H0 <- dataCHN %>% filter(Week == "T0") %>% select(H)
+H0 <- dataCHN %>% filter(Week == "T0") %>% select(HC)
+CN0 <- dataCHN %>% filter(Week == "T0") %>% select(CN)
+C0 <- dataCHN %>% filter(Week == "T0") %>% select(C)
 
 #Create a df to compare the sum of CO2 produced with other variables
-df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment,
-                 H  = H$H,
-                 HC  = HC$HC,
-                 CN  = CN$CN,
+dfCHN <- data.frame(Treatment = data_part1[c(1:44),]$Treatment,
+                 H52  = H52$H,
+                 HC52  = HC52$HC,
+                 CN52  = CN52$CN,
+                 C52  = C52$C,
+                 H39  = H39$H,
+                 HC39  = HC39$HC,
+                 CN39  = CN39$CN,
+                 C39  = C39$C,
                  C_diff = C_diff$C,
                   CN_diff = CN_diff$CN,
                   H_diff = H_diff$H,
@@ -847,10 +862,10 @@ df <- data.frame(Treatment = data_part1[c(1:44),]$Treatment,
           #DieldrinT16 = as_vector(data_noref %>% dplyr::filter(Week == "T16") %>% dplyr::select(Dieldrin)), 
            #DieldrinT39 = as_vector(data_noref %>% dplyr::filter(Week == "T39") %>% dplyr::select(Dieldrin)),
            DieldrinT52 = as_vector(data_noref %>% dplyr::filter(Week == "T52") %>% dplyr::select(Dieldrin)))
-p1 <- ggcorrplot::ggcorrplot(cor(df %>% dplyr::select(-Treatment,-RespCumT48, -RespCumT46, -RespCumT44)), type = 'lower')
+p1 <- ggcorrplot::ggcorrplot(cor(dfCHN %>% dplyr::select(-Treatment,-RespCumT48, -RespCumT46, -RespCumT44)), type = 'lower')
 
 
-p2 <- df %>% ggpubr::ggscatter(y = "TotalRespiration", x = "CN",color = "Treatment", palette = "simpsons") + stat_cor(method = "spearman",aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")))
+
 ggarrange(p1)
 ```
 
@@ -1054,7 +1069,7 @@ g1
 
 <br/>
 
-## Scatter plot of respiration to dieldrin loss (%)
+## Scatter plot of respiration to dieldrin loss (%) and CN ratio
 ```{r scatterplotfig8, fig.cap="Scatterplot of total dieldrin loss (%) and total microbial respiration of the first 16 weeks (µg CO~2~-C g^-1^ soil).", echo = FALSE, warning = FALSE, cache=FALSE, fig.width=9, fig.asp=1}
 # Calculate the sum of CO2 produced per g of soil and create a df for plotting
 
@@ -1092,12 +1107,17 @@ p2 <- ggscatter(data = df, x= "TotalRespiration", y = "TotalLossT39", color = "T
    aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
 )
 
-p3 <- ggscatter(data = df, x= "RespCumT06", y = "TotalLossT52", color = "Treatment", palette = "simpsons", ylab = c("Total dieldrin loss after 52 weeks (%)"))+ stat_cor(method = "spearman",
-   aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
-)
-p4 <- ggscatter(data = df, x= "RespCumT06", y = "TotalLossT39", color = "Treatment", palette = "simpsons",ylab = c("Total dieldrin loss after 39 weeks (%)")) + stat_cor(method = "spearman",
-   aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
-)
+#p3 <- ggscatter(data = df, x= "RespCumT06", y = "TotalLossT52", color = "Treatment", palette = "simpsons", ylab = c("Total dieldrin loss after 52 weeks (%)"))+ stat_cor(method = "spearman",
+#   aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
+#)
+#p4 <- ggscatter(data = df, x= "RespCumT06", y = "TotalLossT39", color = "Treatment", palette = "simpsons",ylab = c("Total dieldrin loss after 39 weeks (%)")) + stat_cor(method = "spearman",
+#   aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))
+#)
+
+## CHN dataframe from chunk 'corplotfig5', creating a scatterplot of CN vs respiration to sit next to the scatterplot
+p3 <- dfCHN %>% ggpubr::ggscatter(y = "TotalRespiration", x = "CN52",color = "Treatment", palette = "simpsons", ylab = "Total microbial respiration (µg CO2-C / g soil)", xlab = "Carbon-to-Nitrogen ratio after 52 weeks") + stat_cor(method = "spearman",aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")))
+
+p4 <- dfCHN %>% ggpubr::ggscatter(y = "TotalRespiration", x = "CN39",color = "Treatment", palette = "simpsons", ylab = "Total microbial respiration (µg CO2-C / g soil)", xlab = "Carbon-to-Nitrogen ratio after 39 weeks") + stat_cor(method = "spearman",aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")))
 
 ggarrange(p2, p1, p4, p3, common.legend = TRUE)
 
