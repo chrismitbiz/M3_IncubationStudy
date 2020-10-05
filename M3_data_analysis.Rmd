@@ -1126,7 +1126,8 @@ ggarrange(p2, p1, p4, p3, common.legend = TRUE)
 Respiration was calculated as the sum of the first 16 weeks of incubation (µg CO~2~-C g^-1^ soil). Hence the microbial respiration was recorded for the first 4 months of incubation only. 
   
 - There was a negative relationship of total respiration and dieldrin loss (%). Dieldrin dissipated less in samples were microorganisms respired more carbon.   
-- This may be another hint that efficiency of carbon use may be linked to dieldrin degradation. Availability of soluble carbon appears to inhibit dieldrin metabolism.  
+- High respiration further resulted in lowest C:N ratios at the end - indicating processing of the labile carbon  
+- This may be another hint that efficiency of carbon-use may be linked to dieldrin degradation. Availability of soluble carbon appears to inhibit dieldrin metabolism.  
 - This relationship was stronger with total dieldrin losses after 12 months (which included the 3 months after mixing the soil).  
 - Perhaps the availability of soluble carbon primed a microbial community that favored fast growing r-strategists and therefore inhibited metabolism of stable carbon sources (with which dieldrin can be associated), even after soil was broken up. 
 
